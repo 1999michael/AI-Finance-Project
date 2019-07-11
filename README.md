@@ -1,2 +1,2 @@
 # AI-Finance-Project
-Stock Price Prediction
+Stock Price Direction Prediction
