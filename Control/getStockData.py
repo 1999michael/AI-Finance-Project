@@ -9,7 +9,7 @@ import datetime
 #import requests
 #from bs4 import BeautifulSoup
 #from selenium import webdriver
-import yfinance as yf
+#import yfinance as yf
 #import time
 
 
@@ -66,13 +66,12 @@ class getStockData:
         for idx, i in enumerate(stock_symbol_NorthAmerican):
             if i in stock_symbol_Mexico or i in stock_symbol_Canada:
                 stock_symbol_NorthAmerican = stock_symbol_NorthAmerican.drop([idx])
-        print(len(stock_symbol_NorthAmerican))
+
 
         for idx_j, j in enumerate(all_Stock_Symbol):
             if j in list(stock_symbol_NorthAmerican) or j == 'ATISW' or j == 'HL^B' or j == 'LEN.B' or j == 'SAND          ':
-                print(j)
                 all_Stock_Symbol = all_Stock_Symbol.drop([idx_j])
-        print(len(all_Stock_Symbol))
+
         none_USA_Symbol = all_Stock_Symbol
         return none_USA_Symbol
 
@@ -96,17 +95,15 @@ class getStockData:
         dir_name = os.path.join(os.getcwd(), 'StockDataCSVFile')
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
-        file_name = '{}.csv'.format(company)
+        file_name = '{}_Data.csv'.format(company)
         path = os.path.join(dir_name, file_name)
         data.to_csv(path)
 
-        c = self.stockDatabase.cursor()
-        c.execute(
-            'CREATE TABLE IF NOT EXISTS {}Data (Date_ REAL,High REAL,Low REAL,Open_price REAL,Close_price REAL,Volume REAL,Adj_close REAL)'.format(
-                company))
+        #c = self.stockDatabase.cursor()
+        #c.execute('CREATE TABLE IF NOT EXISTS {}_AllData (Date_ REAL,High REAL,Low REAL,Open_price REAL,Close_price REAL,Volume REAL,Adj_close REAL)'.format(company))
 
-        data.to_sql(company, self.stockDatabase, if_exists = 'replace')
-        self.stockDatabase.commit()
+        data.to_sql('{}_AllData'.format(company), self.stockDatabase, if_exists = 'replace')
+        #self.stockDatabase.commit()
 
     def getCurrentDate(self):
         currentDate = datetime.datetime.now()
@@ -126,72 +123,47 @@ class getStockData:
 
     def accessCSV(self, company):
         dir_name = os.path.join(os.getcwd(), 'StockDataCSVFile')
-        file_name = '{}.csv'.format(company)
+        file_name = '{}_Data.csv'.format(company)
         path = os.path.join(dir_name, file_name)
         dataCSV = pd.read_csv(path)
         header = list(dataCSV.columns)
         return dataCSV
 
+    def getCompanyStock(self, company):
+        c = self.stockDatabase.cursor()
+        c.execute("SELECT ({col_name}) FROM {table}_AllData".format(col_name='Close', table=company))
+        all_price = c.fetchall()
+        c.execute("SELECT ({col_name}) FROM {table}_AllData".format(col_name='Date', table=company))
+        all_date = c.fetchall()
+        price_list = []
+
+        for i, price_row in enumerate(all_price):
+            price_list = price_list + [price_row[0]]
+
+        company_stock_dict = {}
+        for i, date_row in enumerate(all_date):
+            company_stock_dict[date_row[0][0:10]] = price_list[i]
+
+        dir_name = os.path.join(os.getcwd(), 'Price_Json_File')
+        if not os.path.exists(dir_name):
+            os.mkdir(dir_name)
 
 
+        price_json = 'price_{}.json'.format(company)
 
+        json_path = os.path.join(dir_name, price_json)
+        json.dump(company_stock_dict, open(json_path, 'w'))
 
-    #def webScapeNASDAQ_only3monthdata(self):
-    #    url = 'https://www.nasdaq.com/symbol/goog/historical'
-    #    destination = os.getcwd()
-    #    profile = webdriver.FirefoxProfile()
-    #    profile.set_preference('browser.download.folderList', 2)  # custom location
-    #    profile.set_preference('browser.download.manager.showWhenStarting', False)
-    #    profile.set_preference('browser.download.dir', destination)
-    #    profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'text/plain, application/vnd.ms-excel, text/csv, text/comma-separated-values, application/octet-stream, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    def MultiCompanyPrice(self):
+        cur_dir = os.getcwd()
+        name = 'Stock_Symbols.json'
 
-    #    driver = webdriver.Firefox(profile)
-    #    driver.get(url)
-    #    driver.find_element_by_id("lnkDownLoad").click()
-    #    driver.close()
+        json_path = os.path.join(cur_dir, name)
+        self.stockSymbolJsonFile = json_path
+        with open(self.stockSymbolJsonFile) as f:
+            symbol_list = json.load(f)
 
+        for key in symbol_list:
+            company = symbol_list[key]
+            self.getCompanyStock(company)
         return True
-
-    #def webscrabYAHOO_doesntfullywork(self):
-    #    self.url = 'https://query1.finance.yahoo.com/v7/finance/download/SPY?period1=1530891187&period2=1562427187&interval=1d&events=history&crumb=1Jx3OYxcHZ9'
-
-    #    driver = webdriver.Firefox(profile)
-    #    driver.get(self.url)
-
-    #    html = driver.execute_script("return document.documentElement.outerHTML")
-    #    soup = BeautifulSoup(html, 'html.parser')
-    #    links_with_text = []
-    #    for a in soup.find_all('a', href=True):
-    #        if a.text == 'Download Data':
-
-    #            print(a.text)
-    #            file = requests.get(a['href']).text
-    #            print(file)
-    #            links_with_text.append(a['href'])
-    #    print(links_with_text)
-
-        #driver.find_element_by_id("lnkDownLoad").click()
-
-        #continue_link = driver.find_element_by_partial_link_text('https://query1.finance.yahoo.com/v7/finance/download/GOOGL?period1=1404619200&period2=1562385600&interval=1d&events=history&crumb=sgYHBG54zT0')
-
-        # file = requests.get(continue_link).tex
-    #    driver.close()
-
-    #def doesntwork(self):
-    #    self.url1 = 'https://ca.finance.yahoo.com/quote/GOOGL/history?period1=1404619200&period2=1562385600&interval=1d&filter=history&frequency=1d'
-    #    file = requests.get(self.url).text
-    #    print(file)
-    #    html = driver.execute_script("return document.documentElement.outerHTML")
-    #    soup = BeautifulSoup(file, 'lxml')
-
-    #    tableDiv = soup.find_all('INPUT')
-    #    for link in tableDiv:
-    #        print(link.get('href="/quote/GOOGL/financials?p=GOOGL"'))
-    #        pass
-    #    print(tableDiv)
-    #    return True
-
-
-
-
-
