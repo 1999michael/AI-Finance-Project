@@ -307,8 +307,7 @@ def batch(data, batch_size = 16, train_size = 70, val_size = 15, test_size = 15,
     for time in range(0,len(times)):
         if (times[time] != 0):
             times[time] += random.randint(-pred_length,pred_length)
-    
-    print(times)
+   
     # Batching the data
     # Batch data according to start_point_diff, start_point_deviation, length, and company_group
     batched_data = []
@@ -346,24 +345,31 @@ def batch(data, batch_size = 16, train_size = 70, val_size = 15, test_size = 15,
     train = batched_data[:train_val_split]
     val = batched_data[train_val_split:val_test_split]
     test = batched_data[val_test_split:]
+    '''
+    count = 0
+    for i in train:
+      print(i)
+      count+=1
+      if(count == 3):
+        break
+    ''' 
+    train_data = data_to_tensor(train, company_group)
+    val_data = data_to_tensor(val, company_group)
+    test_data = data_to_tensor(test, company_group)
+    
+    return train_data, val_data,test_data
 
-    train_data, train_label = data_to_tensor(train, batch_size)
-    val_data, val_label = data_to_tensor(val, batch_size)
-    test_data, test_label = data_to_tensor(test, batch_size)
-
-    return train_data, train_label, val_data, val_label, test_data, test_label
-
-def data_to_tensor(batched_data,batch_size = 16):
+def data_to_tensor(batched_data, company_group):
     tensor_data = []
-    tensor_label = []
-    for i in batched_data:
-        tensor_data.append(i[0])
-        tensor_label.append(i[1])
-    tensor_data = torch.FloatTensor(tensor_data)
-    tensor_label = torch.FloatTensor(tensor_label)
-    tensor_data = torch.utils.data.DataLoader(tensor_data, batch_size, shuffle = False)
-    tensor_label = torch.utils.data.DataLoader(tensor_label, batch_size, shuffle = False)
-    return tensor_data, tensor_label
+    if (company_group):
+      for i in batched_data:
+        item_tuple = (torch.FloatTensor(i[0]),torch.FloatTensor(i[1]))
+        tensor_data.append(item_tuple)
+    else:
+      for i in batched_data:
+        item_tuple = (torch.FloatTensor(i[0]),torch.FloatTensor(i[1]))
+        tensor_data.append(item_tuple)
+    return tensor_data
 
 # ===========================================================
 # ====================== Main Function ======================
@@ -450,5 +456,13 @@ def format_data(data, normalize_function = 2, normalize_company = 1, num_range =
 
 # If data = None, we will generate random input
 # If data = True, read the "data_list_complete.json file" --> Go to line 386 if under different name
+
+# company_group = True, all companies at once
+# company_group = False, one company at a time
+
 data = None
-train_data, train_label, val_data, val_label, test_data, test_label = format_data(data, normalize_function = 2, normalize_company = 1, num_range = 1, batch_size = 16, train_size = 70, val_size = 15, test_size = 15, start_point_diff = 25, start_point_deviation = 5, length = 25, pred_length = 5, company_group = True, random_batch = False, no_change_range = 5)
+train_data, val_data, test_data= format_data(data, normalize_function = 2, normalize_company = 1, num_range = 1, batch_size = 16, train_size = 70, val_size = 15, test_size = 15, start_point_diff = 25, start_point_deviation = 5, length = 25, pred_length = 5, company_group = True, random_batch = False, no_change_range = 5)
+
+# DON'T FORGET YOU NEED TO DO:
+# train_loader = torch.utils.data.DataLoader(train_data, batch_size=16)
+# for train, val, test data
