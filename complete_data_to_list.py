@@ -59,12 +59,15 @@ def read_from_database():                                       # Take in raw st
                         counter_j += 1
                 counter_j = 0
                 counter_i += 1
+
         return list_data
 
 def sorting(L):
         splitup = L.split('-')
         return splitup[0], splitup[1], splitup[2]
 
+
+list_data = read_from_database()
 
 
 # FINAL LIST IS THE VARIABLE: list_data
