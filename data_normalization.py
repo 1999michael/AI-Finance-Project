@@ -14,6 +14,74 @@ import json
 import ast
 
 # ===========================================================
+# ================= Data Collecting Class ===================
+# ===========================================================
+class data_collect():
+    def __init__(self, normalize_function = 2, normalize_company = 0, num_range = 1, train_size = 70, val_size = 15, test_size = 15, start_point_diff = 25, start_point_deviation = 5, length = 25, pred_length = 5, company_group = True, random_batch = False, no_change_range = 5, data_points = range(0,11)):
+        self.normalize_function = normalize_function
+        self.normalize_company = normalize_company
+        self.num_range = num_range
+        self.train_size = train_size
+        self.val_size = val_size
+        self.test_size = test_size
+        self.start_point_diff = start_point_diff
+        self.start_point_deviation = start_point_deviation  
+        self.length = length
+        self.pred_length = pred_length
+        self.no_change_range = no_change_range
+        self.company_group = company_group
+        self.random_batch = random_batch
+        self.data_points = data_points
+
+
+    def format_data(self, data):
+        # Generate fake data for testing if no data is given
+        if (data == None):  
+            # For fake data, assume dimension size
+            num_data_per_day = 8
+            num_companies = 161
+            num_days = 820
+            data = random_input_gen(num_data_per_day, num_companies, num_days)
+        elif (data == True):
+            # Read data from .json file
+            data = read_from_database_to_list(self.data_points)
+            # Get length of data input
+            num_data_per_day = len(data[0][0])
+            num_companies = len(data[0])
+            num_days = len(data)
+        
+        
+        # Add Labels
+        data = add_labels(data, self.normalize_function, self.normalize_company, self.num_range, self.pred_length, self.no_change_range)
+
+        # Return batched the data (3 tensors)
+        return batch(data, self.train_size, self.val_size, self.test_size, self.start_point_diff, self.start_point_deviation, self.length, self.pred_length, self.company_group, self.random_batch)
+
+    def get_label_frequency(self, data, dataset_type):
+        data_loader = torch.utils.data.DataLoader(data, batch_size=16)
+        zeros = 0
+        ones = 0
+        neg_one = 0
+        for data_item, data_label in data_loader:
+            label_to_count = data_label.tolist()
+            for i in label_to_count:
+                if (int(i) == -1):
+                    neg_one += 1
+                elif (int(i) == 1):
+                    ones += 1
+                elif (int(i) == 0):
+                    zeros += 1
+        print(neg_one)
+        print(zeros)
+        print(ones)
+        print(dataset_type.upper() + " SET LABEL FREQUENCY")
+        print("Percent of decrease label: ", neg_one / (zeros + ones + neg_one))
+        print("Percent of neutral label:  ", zeros / (zeros + ones + neg_one))
+        print("Percent of increase label: ", ones / (zeros + ones + neg_one))
+        return True
+
+
+# ===========================================================
 # ================= Random input generator ==================
 # ===========================================================
 
@@ -158,7 +226,6 @@ def normalize_data(data, normalize_function = 0, normalize_company = 0, num_rang
 
     if (normalize_company == 0):
         for i in range(num_companies):
-            price, current_ratio, pps, eps, asset_turnover, pe_ratio, cash_flow, return_on_equity, working_capital = [0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]
             for j in range(num_days):
                 for k in range(num_data_per_day):
                     if (maxmin_values[k][1] < data[j][i][k]):
@@ -181,7 +248,7 @@ def normalize_data(data, normalize_function = 0, normalize_company = 0, num_rang
         for i in range(num_companies):
             for j in range(num_days):
                 for k in range(num_data_per_day):
-                    iif (maxmin_values[k][1] < data[j][i][k]):
+                    if (maxmin_values[k][1] < data[j][i][k]):
                         maxmin_values[k][1] = data[j][i][k]
                     if (maxmin_values[k][0] > data[j][i][k]):
                         maxmin_values[k][0] = data[j][i][k]
@@ -371,27 +438,7 @@ def data_to_tensor(batched_data, company_group):
 #   across all companies
 #   in range [-1,1]
 
-def format_data(data, normalize_function = 2, normalize_company = 0, num_range = 1, train_size = 70, val_size = 15, test_size = 15, start_point_diff = 25, start_point_deviation = 5, length = 25, pred_length = 5, company_group = True, random_batch = False, no_change_range = 5, data_points = range(0,11)):
-    # Generate fake data for testing if no data is given
-    if (data == None):
-        # For fake data, assume dimension size
-        num_data_per_day = 8
-        num_companies = 161
-        num_days = 820
-        data = random_input_gen(num_data_per_day, num_companies, num_days)
-    elif (data == True):
-        data = read_from_database_to_list(data_points)
-    
-    # Get length of data input
-    num_data_per_day = len(data[0][0])
-    num_companies = len(data[0])
-    num_days = len(data)
-    
-    # Add Labels
-    data = add_labels(data, normalize_function, normalize_company, num_range, pred_length, no_change_range)
 
-    # Return batched the data (3 tensors)
-    return batch(data, train_size, val_size, test_size, start_point_diff, start_point_deviation, length, pred_length, company_group, random_batch)
 
 # ===================================================================
 # ==================== EXPLANATION OF PARAMETERS ====================
@@ -439,371 +486,3 @@ def format_data(data, normalize_function = 2, normalize_company = 0, num_range =
 # label = 1                     (increase in price)
 # Note: depending on company_group = True / False, the label may be a single number after each batch item, or a 1D-list of size num_companies
 
-
-# =================================================
-# ==================== RUNNING ====================
-# =================================================
-
-# If data = None, we will generate random input
-# If data = True, read the "data_list_complete.json file" --> Go to line 386 if under different name
-
-# company_group = True, all companies at once
-# company_group = False, one company at a time
-
-data = True
-train_data, val_data, test_data= format_data(data, 
-                                            normalize_function = 2, 
-                                            normalize_company = 0, 
-                                            num_range = 1,
-                                            train_size = 70, 
-                                            val_size = 15, 
-                                            test_size = 15, 
-                                            start_point_diff = 25, 
-                                            start_point_deviation = 5, 
-                                            length = 25, 
-                                            pred_length = 5, 
-                                            company_group = True, 
-                                            random_batch = False, 
-                                            no_change_range = 5, 
-                                            data_points = range(0,11))
-
-data = True
-train_data_all, val_data_all, test_data_all = format_data(data, 
-                                                        normalize_function = 2, 
-                                                        normalize_company = 0, 
-                                                        num_range = 1,
-                                                        train_size = 70, 
-                                                        val_size = 15, 
-                                                        test_size = 15, 
-                                                        start_point_diff = 25, 
-                                                        start_point_deviation = 5, 
-                                                        length = 25, 
-                                                        pred_length = 5, 
-                                                        company_group = True, 
-                                                        random_batch = False, 
-                                                        no_change_range = 5, 
-                                                        data_points = range(0,11))
-
-
-# ==============================================================
-# =============== SINGLE COMPANY (Generic Model) ===============
-# ==============================================================
-
-# ===============================================================
-# =============== Accuracy and training functions ===============
-# ===============================================================
-
-torch.manual_seed(1000) # set random seed
-
-def train(model, train_data, val_data, batch_size=16, num_epochs=100, lr = 0.0001, no_change_range = 2.0):
-    
-    criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=lr)
-    iters, losses, val_losses, train_acc, val_acc = [], [], [], [], []
-    
-    train_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size)
-    val_loader = torch.utils.data.DataLoader(val_data, batch_size = batch_size)
-    
-    # training
-    n = 0 
-    for epoch in range(num_epochs):
-        for data, labels in iter(train_loader):
-            out = model(data).cuda()
-            labels = labels.unsqueeze(1).float().cuda()
-            loss = criterion(out, labels)
-            loss.backward()             
-            optimizer.step()              
-            optimizer.zero_grad()
-              
-
-        # save training info
-        iters.append(n)
-        losses.append(float(loss)/batch_size) 
-        
-        for data, labels in iter(val_loader):
-            out = model(data).cuda()
-            labels = labels.unsqueeze(1).float().cuda()
-            loss = criterion(out, labels)
-        val_losses.append(float(loss)/batch_size)
-        
-        # Training and Validation Accuracy
-        train_acc.append(get_accuracy(model, train=True, batch_size = batch_size, no_change_range = no_change_range))
-        val_acc.append(get_accuracy(model, train=False, batch_size = batch_size, no_change_range = no_change_range))
-        n += 1
-        # Output Accuracy for each epoch
-        print("Epoch: ",(epoch + 1), "    Train Loss: ", losses[n-1],"      Val Loss: ", val_losses[n-1],"    Train Accuracy: ", train_acc[n-1], "     Validation Accuracy: ", val_acc[n-1])
-
-    # plotting
-    plt.title("Training Curve")
-    plt.plot(iters, losses, label="Train")
-    plt.plot(iters, val_losses, label = "Val")
-    plt.xlabel("Iterations")
-    plt.ylabel("Loss")
-    plt.legend(loc = 'best')
-    plt.show()
-
-    plt.title("Training Curve")
-    plt.plot(iters, train_acc, label="Train")
-    plt.plot(iters, val_acc, label="Validation")
-    plt.xlabel("Iterations")
-    plt.ylabel("Training Accuracy")
-    plt.legend(loc='best')
-    plt.show()
-
-    print("Final Training Accuracy: {}".format(train_acc[-1]))
-    print("Final Validation Accuracy: {}".format(val_acc[-1]))    
-    
-def get_accuracy(model, train=False, batch_size = 16, no_change_range = 2.0):
-    if train:
-        data = train_data
-    elif (train==False):
-        data = val_data
-    else:
-        data = test_data
-        
-    data_loader = torch.utils.data.DataLoader(data, batch_size=batch_size)
-    correct = 0
-    total = 0
-    for data, labels in data_loader:
-        output = model(data).cuda() # Forward Pass
-        labels = labels.view(-1,1).cuda()
-        correct += compare_pred(labels, output, no_change_range)
-        total += len(labels)
-    return correct / total
-
-def compare_pred(labels, pred, no_change_range):
-    list_labels = labels.tolist()
-    list_pred = pred.tolist()
-    correct = 0
-    for i in range(0,len(list_labels)):
-      if (int(list_labels[i][0]) == -1 and list_pred[i][0] <= (-no_change_range/100.0)):
-        correct += 1
-      elif (int(list_labels[i][0]) == 0 and (list_pred[i][0] < (no_change_range/100.0) and list_pred[i][0] > (-no_change_range/100.0))):
-        correct += 1
-      elif (int(list_labels[i][0]) == 1 and list_pred[i][0] >= (no_change_range/100.0)):
-        correct += 1
-    return correct
-
-# ======================================
-# =============== Models ===============
-# ======================================
-
-class neuralnet_single_company(nn.Module):
-    def __init__(self, data_points, length):
-        super(neuralnet_single_company, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=7, kernel_size=3)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.fc1 = nn.Linear(7 * 11 * 3, 121)
-        self.fc2 = nn.Linear(121, 15)
-        self.fc3 = nn.Linear(15,1)
-        self.length = length
-        self.data_points = data_points
-        
-    def forward(self, x):
-        x = x.view(-1, 1, self.length, self.data_points).cuda()
-        x = self.pool(F.selu(self.conv1(x))).cuda()
-        x = x.view(-1, 7 * 11 * 3).cuda()
-        x = F.selu(self.fc1(x)).cuda()
-        x = F.relu(self.fc2(x)).cuda()
-        x = self.fc3(x).cuda()
-        return x
-
-class neuralnet_single_company_simple(nn.Module):
-    def __init__(self):
-        super(neuralnet_single_company, self).__init__()
-        self.fc1 = nn.Linear(25 * 11, 10)
-        self.fc2 = nn.Linear(10, 1)
-        
-    def forward(self, x):
-        x = x.view(-1, 25 * 11).cuda()
-        x = torch.tanh(self.fc1(x)).cuda()
-        x = self.fc2(x).cuda()
-        return x
-
-# ==================================================
-# ==================== Training ====================
-# ==================================================
-
-# Print train_data label frequency
-train_loader = torch.utils.data.DataLoader(train_data, batch_size=16)
-zeros = 0
-ones = 0
-neg_one = 0
-for train_data_item, train_data_label in train_loader:
-  label_to_count = train_data_label.tolist()
-  for i in label_to_count:
-    if (int(i) == -1):
-      neg_one += 1
-    elif (int(i) == 1):
-      ones += 1
-    elif (int(i) == 0):
-      zeros += 1
-print(neg_one)
-print(zeros)
-print(ones)
-print("          TRAIN SET LABEL FREQUENCY")
-print("Percent of decrease label: ", neg_one / (zeros + ones + neg_one))
-print("Percent of neutral label:  ", zeros / (zeros + ones + neg_one))
-print("Percent of increase label: ", ones / (zeros + ones + neg_one))
-
-# Print val_data label frequency
-val_loader = torch.utils.data.DataLoader(val_data, batch_size = 16)
-zeros = 0
-ones = 0
-neg_one = 0
-for val_data_item, val_data_label in val_loader:
-  label_to_count = val_data_label.tolist()
-  for i in label_to_count:
-    if (int(i) == 0):
-      zeros += 1
-    elif (int(i) == 1):
-      ones += 1
-    elif (int(i) == -1):
-      neg_one += 1
-print(neg_one)
-print(zeros)
-print(ones)
-print("          VAL SET LABEL FREQUENCY")
-print("Percent of decrease label: ", neg_one / (zeros + ones + neg_one))
-print("Percent of neutral label:  ", zeros / (zeros + ones + neg_one))
-print("Percent of increase label: ", ones / (zeros + ones + neg_one))
-
-# Print test_data label frequency 
-test_loader = torch.utils.data.DataLoader(test_data, batch_size = 16)
-zeros = 0
-ones = 0
-neg_one = 0
-for test_data_item, test_data_label in test_loader:
-  label_to_count = test_data_label.tolist()
-  for i in label_to_count:
-    if (int(i) == 0):
-      zeros += 1
-    elif (int(i) == 1):
-      ones += 1
-    elif (int(i) == -1):
-      neg_one += 1
-print(neg_one)
-print(zeros)
-print(ones)
-print("          TEST SET LABEL FREQUENCY")
-print("Percent of decrease label: ", neg_one / (zeros + ones + neg_one))
-print("Percent of neutral label:  ", zeros / (zeros + ones + neg_one))
-print("Percent of increase label: ", ones / (zeros + ones + neg_one))
-
-# Training our model
-
-length = 25     # Number of days in a single item 
-num_data = 11   # Number of data points we are using
-
-model = neuralnet_single_company(num_data, length).cuda()
-train(model, train_data, val_data, batch_size=16, num_epochs=200, lr = 0.00002, no_change_range = 2.0)
-
-# ====================================================
-# =============== ALL COMPANY TOGETHER =============== # FAILS TO TRAIN AS OF NOW
-# ====================================================
-
-# ===============================================================
-# =============== Accuracy and training functions ===============
-# ===============================================================
-
-def train_all(model, train_data_all, val_data_all, batch_size=16, num_epochs=20, lr = 0.0001, no_change_range = 2.0):
-    criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=lr)
-
-    iters, losses, val_loss, train_acc, val_acc = [], [], [], [], []
-    train_loader = torch.utils.data.DataLoader(train_data_all, batch_size=batch_size)
-    val_loader = torch.utils.data.DataLoader(val_data_all, batch_size=batch_size)
-    # training
-    n = 0 
-    for epoch in range(num_epochs):
-        for imgs, labels in iter(train_loader):
-            out = model(imgs)
-            loss = criterion(out, labels)
-            loss.backward()               
-            optimizer.step()              
-            optimizer.zero_grad()         
-
-        # save training info
-        iters.append(n)
-        losses.append(float(loss)/batch_size)
-
-        for imgs, labels in iter(val_loader):
-            out = model(imgs)
-            loss = criterion(out, labels)
-
-        val_loss.append(float(loss)/batch_size)
-
-        # Training and Validation Accuracy
-        train_acc.append(get_accuracy_all(model, train=True, batch_size = batch_size, no_change_range = no_change_range)) 
-        val_acc.append(get_accuracy_all(model, train=False, batch_size = batch_size, no_change_range = no_change_range))  
-        n += 1
-
-        # Output Accuracy for each epoch
-        print("Epoch: ",(epoch + 1), "    Train Loss: ", losses[n-1],"      Val Loss: ", val_loss[n-1], "    Train Accuracy: ", train_acc[n-1], "     Validation Accuracy: ", val_acc[n-1])
-        
-    # plotting
-    plt.title("Training Curve")
-    plt.plot(iters, losses, label="Train")
-    plt.plot(iters, val_loss, label = "Val")
-    plt.xlabel("Iterations")
-    plt.ylabel("Loss")
-    plt.legend(loc = 'best')
-    plt.show()
-
-    plt.title("Training Curve")
-    plt.plot(iters, train_acc, label="Train")
-    plt.plot(iters, val_acc, label="Validation")
-    plt.xlabel("Iterations")
-    plt.ylabel("Training Accuracy")
-    plt.legend(loc='best')
-    plt.show()
-
-    print("Final Training Accuracy: {}".format(train_acc[-1]))
-    print("Final Validation Accuracy: {}".format(val_acc[-1]))    
-    
-def get_accuracy_all(model, train=False, batch_size = 64, no_change_range = 2.0):
-    if train:
-        data = train_data_all
-    elif (train==False):
-        data = val_data_all
-    else:
-        data = test_data_all
-        
-    data_loader = torch.utils.data.DataLoader(data, batch_size=batch_size)
-    correct = 0
-    total = 0
-    for imgs, labels in data_loader:
-        output = model(imgs)
-        correct += compare_pred(labels, output, no_change_range)
-        total += len(labels)
-    return correct / total
-
-# ======================================
-# =============== Models ===============
-# ======================================
-
-class neuralnet_all_company(nn.Module):
-    def __init__(self, num_data = 11, length = 25):
-        super(neuralnet_all_company, self).__init__()
-        self.fc1 = nn.Linear(num_data * length * 161, 3000)
-        self.fc2 = nn.Linear(3000, 1000)
-        self.fc3 = nn.Linear(1000, 300)
-        self.fc4 = nn.Linear(300, 161)
-        self.length = length
-        self.num_data = num_data
-        
-    def forward(self, x):
-        x = x.view(-1, self.num_data * self.length * 161)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
-        x = self.fc4(x)
-        return x
-
-#  Training our model
-
-length = 25     # Number of days in a single item 
-num_data = 11   # Number of data points we are using
-
-model_all = neuralnet_all_company(num_data, length).cuda()
-train(model_all, train_data_all, val_data,_all batch_size=16, num_epochs=200, lr = 0.00002, no_change_range = 2.0)
