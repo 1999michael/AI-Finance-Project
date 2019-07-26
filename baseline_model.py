@@ -12,7 +12,7 @@ import random
 import math
 import json
 import ast
-from data_normalization import data_collect
+from data_input_formatting import data_collect
 
 
 # ========================================
