@@ -7,5 +7,6 @@ def download():
     #getStockDataValue.convertSymToJsonFile()
     getStockDataValue.downloadDataToLocal()
     getStockDataValue.MultiCompanyPrice()
+
 if __name__ == "__main__":
     download()
