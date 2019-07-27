@@ -19,6 +19,8 @@ from data_input_formatting import data_collect
 # =============== Get Data ===============
 # ========================================
 
+filename = "/content/gdrive/My Drive/Colab Notebooks/Stock Price Direction Prediction/Data/data_list_complete.txt"
+
 # Data for a single company
 
 data_single_company =  data_collect(normalize_function = 2, 
@@ -38,7 +40,7 @@ data_single_company =  data_collect(normalize_function = 2,
 
 # True means get data from .json database. None means use random data
 # can use, for example data_single_company.get_label_frequency(train_data_single, "Train") to print label frequencies (return True)
-train_data_single, val_data_single, test_data_single = data_single_company.format_data(True) 
+train_data_single, val_data_single, test_data_single = data_single_company.format_data(True, ) 
 
 data_all_company = data_collect(normalize_function = 2, 
                                 normalize_company = 0, 

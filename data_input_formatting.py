@@ -34,7 +34,7 @@ class data_collect():
         self.data_points = data_points
 
 
-    def format_data(self, data):
+    def format_data(self, data, filename):
         # Generate fake data for testing if no data is given
         if (data == None):  
             # For fake data, assume dimension size
@@ -44,7 +44,7 @@ class data_collect():
             data = random_input_gen(num_data_per_day, num_companies, num_days)
         elif (data == True):
             # Read data from .json file
-            data = read_from_database_to_list(self.data_points)
+            data = read_from_database_to_list(self.data_points, filename)
             # Get length of data input
             num_data_per_day = len(data[0][0])
             num_companies = len(data[0])
@@ -115,8 +115,8 @@ def random_input_gen(num_data_per_day = 11, num_companies = 161, num_days = 820,
 #                       --> 9 = 14-day moving avg,
 #                       --> 10 = 37-day moving average
 
-def read_from_database_to_list(data_points = range(0,11)):      # Take in raw str, and convert to dictionary, then to list
-        with open("data_list_complete.json") as f:              # *******FILE LOCATION/NAME MAY DIFFER ACCORDING TO YOUR REQUIREMENTS******
+def read_from_database_to_list(data_points = range(0,11), filename = "data_list_complete.json"):      # Take in raw str, and convert to dictionary, then to list
+        with open(filename) as f:              # *******FILE LOCATION/NAME MAY DIFFER ACCORDING TO YOUR REQUIREMENTS******
                 content = f.readlines()
         content = [x.strip() for x in content] 
         data = []
