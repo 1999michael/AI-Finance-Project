@@ -113,7 +113,7 @@ def update_pps_and_pe_ratio():
         for item_num in range(len(data)):
                 if (data[item_num]["PE ratio"] == float(0)):
                         try:
-                                data[item_num]["PE ratio"] = data[item_num]["PPS"] / data[item]["EPS"]
+                                data[item_num]["PE ratio"] = data[item_num]["PPS"] / data[item_num]["EPS"]
                         except:
                                 print(data[item_num]["symbol"], data[item_num]["date"])
         check(data)
