@@ -1,7 +1,7 @@
 # AI-Finance-Project
 Stock Price Direction Prediction
 
-This is the branch including some data collecting on historical stock data and processing file. Note, in order to run the data code, first ensure you have the following installed with updated python, so no Python 2.7
+This is the branch including some data collecting on historical stock data and processing file. Note, in order to run the data code, first ensure you have the following installed with more recent python than Python 2.7
 pip install sql
 pip install pandas
 pip install pandas-datareader
