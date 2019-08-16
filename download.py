@@ -4,7 +4,7 @@ from Control.getStockData import getStockData
 
 def download():
     getStockDataValue = getStockData()
-    #getStockDataValue.convertSymToJsonFile()
+    getStockDataValue.convertSymToJsonFile()
     getStockDataValue.downloadDataToLocal()
     getStockDataValue.MultiCompanyPrice()
 

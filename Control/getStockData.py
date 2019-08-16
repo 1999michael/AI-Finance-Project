@@ -77,7 +77,7 @@ class getStockData:
         '''
 
         # Get the stock symbol list to be filtered
-        all_Stock_Symbol = self.getStockSymbol(stockdf)
+        all_Stock_Symbol = self.getStockSymbol(self.stockdf)
 
         # Obtain NorthAmerican and Canada and Mexico company name lists
         col_Mexico = self.getColumnNames(self.stockdf_Mexico)[0]  # return 'stock symbol'
@@ -93,13 +93,14 @@ class getStockData:
                 stock_symbol_NorthAmerican = stock_symbol_NorthAmerican.drop([idx])
 
         # Obtain non-American Company name list
-        for idx_j, j in enumerate(all_Stock_Symbol):
-            if j in list(stock_symbol_NorthAmerican) or j == 'ATISW' or j == 'HL^B' or j == 'LEN.B' or j == 'SAND          ' or j == 'VNTR' or j == 'VRS' or j == 'VSM' or j == 'VVV':
+        removeList = list(stock_symbol_NorthAmerican) +['ATISW', 'HL^B', 'LEN.B', 'SAND          ', 'VNTR', 'VRS', 'VSM', 'VVV']
+        for i in removeList:
+            if i in all_Stock_Symbol:
+                loc = np.where(all_Stock_Symbol == i)
                 all_Stock_Symbol = all_Stock_Symbol.drop([idx_j])
 
         none_USA_Symbol = all_Stock_Symbol
         return none_USA_Symbol
-
 
     def getColumnNames(self, stockdf):
         col_name_list = []
@@ -162,13 +163,6 @@ class getStockData:
         dataCSV = pd.read_csv(path)
         header = list(dataCSV.columns)
         return dataCSV
-
-
-
-
-
-
-
 
     def getCompanyStock(self, company):
         '''

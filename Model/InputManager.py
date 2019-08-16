@@ -19,18 +19,20 @@ class InputManager:
         '''
         # get the date for each company that their financial statement came out
         jsonPath = os.path.join(os.getcwd(), 'data_list_incomplete.json')
+
         with open(self.dataFileLocation, 'r') as dataFile:
             with open(jsonPath, 'w') as jsonFile:
                 for lines in dataFile:
-                    json.dump(literal_eval(lines), jsonFile)
+                    line = literal_eval(lines)
+                    json.dump(line, jsonFile)
                     jsonFile.write('\n')
-
         self.incompleteDF = pd.read_json(jsonPath, lines = True) # lines = True --> Read the file as a json object per line.
 
         # Change json file to csv file to be used for dataframe
 
     def getJson(self):
         jsonPath = os.path.join(os.getcwd(), 'data_list.json')
+
         companyList = self.incompleteDF.symbol.unique()
         col_name = list(self.incompleteDF.columns)
 
@@ -130,6 +132,7 @@ class InputManager:
         # Update company financial statement data to include stock price data
         for (i,(closePrice, date)) in enumerate(inBetweenList):
             # Calculate 14 days moving average
+            #print(dfComplete)
             first14DayData = dfComplete.iloc[(start+i-14):(start+i)]
             first14DayClose = list(first14DayData['Close'])
             the14DayAverage = statistics.mean(first14DayClose)
