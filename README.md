@@ -10,15 +10,15 @@ All_Company_LSTM_Model --> Contains the all-companies LSTM model
 Generic-Approach-LSTM/GRU --> Contains the generic LSTM final model (also having tested GRU as an option)
 
 FINAL TEST ACCURACY: 82.1%
-
-data_list_complete.json complete file data variables:
-    Financial Statement Ratios  
-        0 = EPS  
-        1 = PE ratio  
-        2 = PPS  
-        3 = asset turnover  
-        4 = cash flow  
-        5 = current ratio  
+<ul>
+    <li>data_list_complete.json complete file data variables:</li>
+    <li>Financial Statement Ratios  </li>
+        <li>0 = EPS  </li>
+        <li>1 = PE ratio  </li>
+        <li>2 = PPS  </li>
+        <li>3 = asset turnover  </li>
+        <li>4 = cash flow  </li>
+        <li>5 = current ratio  </li>
         6 = return on equity  
         7 = working capital  
     Stock Prices and Indicators  
@@ -37,3 +37,4 @@ data_list_complete.json complete file data variables:
         20 = moving average convergence divergence  
         21 = 25 day moving average  
         22 = 50 day moving average  
+</ul>
