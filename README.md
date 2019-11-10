@@ -12,7 +12,9 @@ Generic-Approach-LSTM/GRU --> Contains the generic LSTM final model (also having
 FINAL TEST ACCURACY: 82.1%
 
 ---
-data_list_complete.json corresponding data variables
+Data Documentation
+
+Currently we can use up to 23 variables extracted from both financial statements and stock prices and stock indicators. Below are the variable with their corresponding index within data_list_complete.json.  
 Financial Statement Ratios  
 <ul>
     <li>0 = EPS  </li>
