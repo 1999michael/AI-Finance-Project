@@ -11,30 +11,30 @@ Generic-Approach-LSTM/GRU --> Contains the generic LSTM final model (also having
 
 FINAL TEST ACCURACY: 82.1%
 <ul>
-    <li>data_list_complete.json complete file data variables:</li>
-    <li>Financial Statement Ratios  </li>
+    data_list_complete.json complete file data variables:</li>
+    Financial Statement Ratios
         <li>0 = EPS  </li>
         <li>1 = PE ratio  </li>
         <li>2 = PPS  </li>
         <li>3 = asset turnover  </li>
         <li>4 = cash flow  </li>
         <li>5 = current ratio  </li>
-        6 = return on equity  
-        7 = working capital  
+        <li>6 = return on equity  
+        <li>7 = working capital  
     Stock Prices and Indicators  
-        8 = Closing stock price       **MUST BE PRESENT TO MAKE LABELS**  
-        9 = 14-day moving avg  
-        10 = 37-day moving average  
-        11 = 14-day stochastic moving oscillator  
-        12 = 3-day stochastic moving average  
-        13 = relative strength index  
-        14 = 14 day stochastic oscillator  
-        15 = 3 day stochastic moving average  
-        16 = 14 day relative strength index  
-        17 = Open price  
-        18 = 12 day exponential moving average  
-        19 = 26 day exponential moving average  
-        20 = moving average convergence divergence  
-        21 = 25 day moving average  
-        22 = 50 day moving average  
+        <li>8 = Closing stock price       **MUST BE PRESENT TO MAKE LABELS** </li> 
+        <li>9 = 14-day moving avg  </li>
+        <li>10 = 37-day moving average  </li>
+        <li>11 = 14-day stochastic moving oscillator  </li>
+        <li>12 = 3-day stochastic moving average  </li>
+        <li>13 = relative strength index  </li>
+        <li>14 = 14 day stochastic oscillator  </li>
+        <li>15 = 3 day stochastic moving average  </li>
+        <li>16 = 14 day relative strength index  </li>
+        <li>17 = Open price  </li>
+        <li>18 = 12 day exponential moving average  </li>
+        <li>19 = 26 day exponential moving average  </li>
+        <li>20 = moving average convergence divergence  </li>
+        <li>21 = 25 day moving average  </li>
+        <li>22 = 50 day moving average  </li>
 </ul>
