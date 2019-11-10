@@ -22,7 +22,7 @@ FINAL TEST ACCURACY: 82.1%
 *to be completed*
 
 ---
-**Processed Data**
+**Variable Creation**
 
 *Variable Explanation*
 
