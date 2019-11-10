@@ -12,7 +12,15 @@ Generic-Approach-LSTM/GRU --> Contains the generic LSTM final model (also having
 FINAL TEST ACCURACY: 82.1%
 
 ---
-**Processed Data Documentation**
+**Data Collecting**
+*to be completed*
+
+---
+**Data Cleaning**
+*to be completed*
+
+---
+**Processed Data**
 
 Currently we can use up to 23 variables extracted from both financial statements and stock prices and stock indicators. Below are the variable with their corresponding index within data_list_complete.json.  
 
@@ -46,3 +54,15 @@ Stock Prices and Indicators
     <li>21 = 25 day moving average  </li>
     <li>22 = 50 day moving average  </li>
 </ul>
+
+---
+**Neural Network**
+*To be completed*
+
+---
+**Investment Simulator**
+*To be completed*
+
+---
+**Investment Techniques**
+*To be completed*
