@@ -13,7 +13,7 @@ FINAL TEST ACCURACY: 82.1%
 
 data_list_complete.json complete file data variables:
 
-Financial Statement Ratios
+Financial Statement Ratios  
 <ul>
     <li>0 = EPS  </li>
     <li>1 = PE ratio  </li>
@@ -25,6 +25,7 @@ Financial Statement Ratios
     <li>7 = working capital  </li>
 </ul>
 Stock Prices and Indicators  
+
 <ul>
     <li>8 = Closing stock price       **MUST BE PRESENT TO MAKE LABELS** </li> 
     <li>9 = 14-day moving avg  </li>
