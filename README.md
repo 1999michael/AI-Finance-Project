@@ -12,16 +12,16 @@ Generic-Approach-LSTM/GRU --> Contains the generic LSTM final model (also having
 FINAL TEST ACCURACY: 82.1%
 
 data_list_complete.json complete file data variables:
-    Financial Statement Ratios
-        0 = EPS
-        1 = PE ratio
-        2 = PPS
-        3 = asset turnover
-        4 = cash flow
-        5 = current ratio
-        6 = return on equity
-        7 = working capital
-    Stock Prices and Indicators
+    Financial Statement Ratios  
+        0 = EPS  
+        1 = PE ratio  
+        2 = PPS  
+        3 = asset turnover  
+        4 = cash flow  
+        5 = current ratio  
+        6 = return on equity  
+        7 = working capital  
+    Stock Prices and Indicators  
         8 = Closing stock price       **MUST BE PRESENT TO MAKE LABELS**
         9 = 14-day moving avg
         10 = 37-day moving average
