@@ -13,14 +13,18 @@ FINAL TEST ACCURACY: 82.1%
 
 ---
 **Data Collecting**
+
 *to be completed*
 
 ---
 **Data Cleaning**
+
 *to be completed*
 
 ---
 **Processed Data**
+
+*Variable Explanation*
 
 Currently we can use up to 23 variables extracted from both financial statements and stock prices and stock indicators. Below are the variable with their corresponding index within data_list_complete.json.  
 
@@ -56,13 +60,21 @@ Stock Prices and Indicators
 </ul>
 
 ---
+**Data Formatting**
+
+*To be completed*
+
+---
 **Neural Network**
+
 *To be completed*
 
 ---
 **Investment Simulator**
+
 *To be completed*
 
 ---
 **Investment Techniques**
+
 *To be completed*
