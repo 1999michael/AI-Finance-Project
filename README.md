@@ -12,8 +12,7 @@ Generic-Approach-LSTM/GRU --> Contains the generic LSTM final model (also having
 FINAL TEST ACCURACY: 82.1%
 
 ---
-data_list_complete.json complete file data variables:
-
+data_list_complete.json corresponding data variables
 Financial Statement Ratios  
 <ul>
     <li>0 = EPS  </li>
