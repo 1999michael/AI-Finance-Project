@@ -10,7 +10,7 @@ All_Company_LSTM_Model --> Contains the all-companies LSTM model
 Generic-Approach-LSTM/GRU --> Contains the generic LSTM final model (also having tested GRU as an option)
 
 FINAL TEST ACCURACY: 82.1%
-
+---
 data_list_complete.json complete file data variables:
 
 Financial Statement Ratios  
